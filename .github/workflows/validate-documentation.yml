@@ -12,9 +12,6 @@ on:
       file-content:
         description: 'Content of the file'
         required: true
-      approval:
-        description: 'Admin approval to push the file'
-        required: true
 
 jobs:
   request-approval:
