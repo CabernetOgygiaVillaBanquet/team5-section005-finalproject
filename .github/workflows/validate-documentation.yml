@@ -1,0 +1,47 @@
+name: Push to Specific Folder with Admin Approval
+
+on:
+  workflow_dispatch:
+    inputs:
+      file-name:
+        description: 'Name of the file to create'
+        required: true
+      folder-path:
+        description: 'Path to the folder where the file will be created'
+        required: true
+      file-content:
+        description: 'Content of the file'
+        required: true
+      approval:
+        description: 'Admin approval to push the file'
+        required: true
+
+jobs:
+  request-approval:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Request approval
+      run: echo "Requesting admin approval to push a file to a specific folder."
+
+  push-to-folder:
+    needs: request-approval
+    runs-on: ubuntu-latest
+    if: github.event.inputs.approval == 'true'
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Create file in specific folder
+      run: |
+        mkdir -p ${{ github.event.inputs.folder-path }}
+        echo "${{ github.event.inputs.file-content }}" > ${{ github.event.inputs.folder-path }}/${{ github.event.inputs.file-name }}
+
+    - name: Commit and push changes
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add ${{ github.event.inputs.folder-path }}/${{ github.event.inputs.file-name }}
+        git commit -m "Add file ${{ github.event.inputs.file-name }} to ${{ github.event.inputs.folder-path }}"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
