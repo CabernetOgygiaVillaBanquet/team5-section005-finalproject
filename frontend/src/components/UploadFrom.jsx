@@ -9,9 +9,9 @@ function UploadForm({ token }) {
 
   // Define the machine paths
   const machinePaths = {
-    'Machine A': 'image/machineA',
-    'Machine B': 'image/machineB',
-    'Machine C': 'image/machineC',
+    'Machine A': 'Machines/MachineA',
+    'Machine B': 'Machines/MachineB',
+    'Machine C': 'Machines/MachineC',
   };
 
   const handleFileChange = (event) => {
