@@ -12,6 +12,10 @@ on:
       file-content:
         description: 'Content of the file'
         required: true
+      approval:
+        description: 'Admin approval to proceed'
+        required: true
+        default: 'false'
 
 jobs:
   request-approval:
@@ -23,7 +27,7 @@ jobs:
   push-to-folder:
     needs: request-approval
     runs-on: ubuntu-latest
-    if: github.event.inputs.approval == 'true'
+    if: ${{ github.event.inputs.approval == 'true' }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
