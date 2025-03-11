@@ -4,8 +4,15 @@ import '../App.css';
 
 function UploadForm({ token }) {
   const [selectedFile, setSelectedFile] = useState(null);
-  const [machine, setMachine] = useState('');
+  const [machine, setMachine] = useState('Machine A');
   const [uploading, setUploading] = useState(false);
+
+  // Define the machine paths
+  const machinePaths = {
+    'Machine A': 'image/machineA',
+    'Machine B': 'image/machineB',
+    'Machine C': 'image/machineC',
+  };
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -20,7 +27,7 @@ function UploadForm({ token }) {
     setUploading(true);
     const formData = new FormData();
     formData.append('file', selectedFile);
-    formData.append('machine', machine);
+    formData.append('machinePath', machinePaths[machine]);
 
     try {
       await axios.post('/upload', formData, {
@@ -41,7 +48,11 @@ function UploadForm({ token }) {
     <form onSubmit={handleSubmit} className="upload-form">
       <label>
         Select Machine:
-        <input type="text" value={machine} onChange={handleMachineChange} required />
+        <select value={machine} onChange={handleMachineChange} required>
+          <option value="Machine A">Machine A</option>
+          <option value="Machine B">Machine B</option>
+          <option value="Machine C">Machine C</option>
+        </select>
       </label>
       <label>
         Upload File:
