@@ -30,6 +30,21 @@ jobs:
           console.log(`Workflow run status: ${status}`);
           console.log(`Workflow run conclusion: ${conclusion}`);
     
+          if (status === 'in_progress') {
+            console.log('Workflow is still in progress. Waiting for completion...');
+            // Optionally, you can add a delay and retry mechanism here
+            await new Promise(resolve => setTimeout(resolve, 30000)); // wait for 30 seconds
+            const { data: updatedRun } = await github.actions.getWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.runId,
+            });
+            status = updatedRun.status;
+            conclusion = updatedRun.conclusion;
+            console.log(`Updated workflow run status: ${status}`);
+            console.log(`Updated workflow run conclusion: ${conclusion}`);
+          }
+    
           if (status !== 'completed' || conclusion !== 'success') {
             throw new Error('Admin approval required because the workflow run did not complete successfully.');
           }
