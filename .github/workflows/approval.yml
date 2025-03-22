@@ -1,0 +1,19 @@
+name: Admin Approval
+
+on:
+  workflow_run:
+    workflows: ["Validate Commit"]
+    types:
+      - requested
+
+jobs:
+  approval:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Await admin approval
+      uses: actions/github-script@v3
+      with:
+        github-token: ${{ secrets.PAT }}
+        script: |
+          // Notify admin for approval
+          console.log('Waiting for admin approval...');
