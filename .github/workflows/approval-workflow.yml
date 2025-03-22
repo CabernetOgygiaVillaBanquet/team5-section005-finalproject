@@ -1,17 +1,19 @@
-name: Manual Approval Workflow
+name: Approval Workflow
 
 on:
-  workflow_dispatch:
+  issues:
+    types: [opened, edited]
 
 jobs:
-  request-approval:
+  approval:
+    if: contains(github.event.issue.title, 'Approval required for file upload')
     runs-on: ubuntu-latest
     steps:
-      - name: Request manual approval
-        run: echo "Please approve this workflow to proceed."
+      - name: Approval required
+        run: echo "This issue requires approval for file upload."
 
   deploy:
-    needs: request-approval
+    needs: approval
     runs-on: ubuntu-latest
     environment: Users
     steps:

@@ -66,6 +66,22 @@ function UploadForm() {
 
         console.log("File uploaded successfully!", response.data);
         alert('File uploaded successfully. Awaiting admin validation.');
+
+        // Trigger an issue creation for manual approval
+        const issueUrl = `https://api.github.com/repos/${owner}/${repo}/issues`;
+        const issueData = {
+          title: `Approval required for file upload: ${selectedFile.name}`,
+          body: `A new file has been uploaded to the path: ${filePath}. Please review and approve.`,
+        };
+
+        await axios.post(issueUrl, issueData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        console.log("Issue created successfully!");
       } catch (error) {
         console.error("Error uploading file:", error.message);
         if (error.response) {
