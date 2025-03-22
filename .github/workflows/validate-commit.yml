@@ -19,7 +19,7 @@ jobs:
     - name: Wait for admin approval
       uses: actions/github-script@v3
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        github-token: ${{ secrets.PAT }}  # Use the PAT stored in secrets
         script: |
           const { data: { conclusion } } = await github.actions.getWorkflowRun({
             owner: context.repo.owner,
