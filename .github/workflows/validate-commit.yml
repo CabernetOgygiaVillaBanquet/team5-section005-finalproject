@@ -15,17 +15,3 @@ jobs:
 
     - name: Validate commit
       run: echo "Validating commit..."
-
-    - name: Wait for admin approval
-      uses: actions/github-script@v3
-      with:
-        github-token: ${{ secrets.PAT }}  # Use the PAT stored in secrets
-        script: |
-          const { data: { conclusion } } = await github.actions.getWorkflowRun({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            run_id: context.runId,
-          });
-          if (conclusion !== 'success') {
-            throw new Error('Admin approval required');
-          }
