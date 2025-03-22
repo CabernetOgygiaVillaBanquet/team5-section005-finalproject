@@ -21,11 +21,15 @@ jobs:
       with:
         github-token: ${{ secrets.PAT }}
         script: |
-          const { data: { conclusion } } = await github.actions.getWorkflowRun({
+          const { data: { conclusion, status } } = await github.actions.getWorkflowRun({
             owner: context.repo.owner,
             repo: context.repo.repo,
             run_id: context.runId,
           });
-          if (conclusion !== 'success') {
-            throw new Error('Admin approval required');
+    
+          console.log(`Workflow run status: ${status}`);
+          console.log(`Workflow run conclusion: ${conclusion}`);
+    
+          if (status !== 'completed' || conclusion !== 'success') {
+            throw new Error('Admin approval required because the workflow run did not complete successfully.');
           }
