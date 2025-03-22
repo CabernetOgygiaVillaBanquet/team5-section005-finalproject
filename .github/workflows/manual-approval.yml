@@ -1,0 +1,22 @@
+name: Manual Approval Workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  request-approval:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request manual approval
+        run: echo "Please approve this workflow to proceed."
+
+  deploy:
+    needs: request-approval
+    runs-on: ubuntu-latest
+    environment: Users
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Deploy
+        run: echo "Deploying the project..."
+      # Add other necessary deployment steps here
