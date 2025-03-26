@@ -23,7 +23,7 @@ jobs:
 
       - name: Add label to PR
         env:
-          GH_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT }}
         run: |
           gh api \
             -X POST \
