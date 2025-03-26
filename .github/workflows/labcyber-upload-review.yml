@@ -35,5 +35,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PAT }}
         run: |
-          gh pr comment ${{ github.event.pull_request.number }} \
-            --body "🔔 **New LabCyber Docs Upload**\n\n- **PR Title**: ${{ github.event.pull_request.title }}\n- **From**: @${{ github.event.pull_request.user.login }}\n\n📎 Please review and merge the changes."
+          FILES=$(git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" | sed 's/^/- /')
+          BODY="📎 **LabCyber Docs Upload**\n\n🧾 _${{ github.event.pull_request.title }}_ by @${{ github.event.pull_request.user.login }}\n\n📂 Files:\n$FILES\n\n✅ Please review & merge if valid."
+          gh pr comment "${{ github.event.pull_request.number }}" --body "$BODY"
