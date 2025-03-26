@@ -1,53 +1,216 @@
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-image: url('/public/background.jpeg'); /* Replace with your image path */
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    height: 100vh;
+@font-face {
+  font-family: 'Trebuchet MS', sans-serif;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Trebuchet MS', sans-serif;
+  background: #000;
+  color: #fff;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.hatom-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+}
+
+.hatom-card {
+  background-color: #0d0d0d;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 0 30px rgba(94, 34, 195, 0.2);
+  width: 100%;
+  max-width: 900px;
+  margin-bottom: 2rem;
+}
+
+.hatom-title {
+  color: #5e22c3;
+  font-size: 2.2rem;
+  font-weight: 500;
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+}
+
+.hatom-button {
+  font-family: 'Trebuchet MS', sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
+  background-color: #5e22c3;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem 2rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.3s ease;
+  margin-top: 1rem;
+}
+
+.hatom-button:hover {
+  background-color: #4a1ca1;
+}
+
+.logout {
+  margin-bottom: 2rem;
+}
+
+.upload-form {
+  background: #0d0d0d;
+  color: #fff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 0 25px rgba(94, 34, 195, 0.1);
+  font-family: 'Trebuchet MS', sans-serif;
+  max-width: 600px;
+  margin: 2rem auto;
+  position: relative;
+}
+
+.upload-form .form-group {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.upload-form label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #5e22c3;
+}
+
+.upload-form select,
+.upload-form input[type="text"],
+.upload-form input[type="file"] {
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: none;
+  background: #111;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.upload-form .summary {
+  margin-top: 1.5rem;
+  border-top: 1px solid #333;
+  padding-top: 1rem;
+  font-size: 0.95rem;
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.drop-zone {
+  border: 2px dashed #5e22c3;
+  padding: 2rem;
+  text-align: center;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  background: #101010;
+  transition: background 0.3s ease;
+}
+
+.drop-zone:hover {
+  background: #181818;
+}
+
+.preview-card {
+  background: #151515;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  border: 1px solid #2a2a2a;
+}
+
+.preview-image {
+  max-width: 100%;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.toast {
+  position: absolute;
+  top: -1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #5e22c3;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: bold;
+  animation: fadeIn 0.5s ease, fadeOut 0.5s ease 2.5s;
+}
+
+.toast.error {
+  background: #ff4c4c;
+  color: #fff;
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; transform: translateY(-10px); }
+}
+
+.welcome-message {
+  background: #101010;
+  border: 1px solid #5e22c3;
+  color: #5e22c3;
+  padding: 1rem;
+  border-radius: 10px;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.user-dashboard {
+  padding: 1rem 0;
+}
+
+.login-intro {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: #5e22c3;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .hatom-card, .upload-form {
+    padding: 1rem;
+    border-radius: 12px;
   }
-  
-  .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    color: white;
-    text-shadow: 1px 1px 2px black;
+
+  .hatom-title {
+    font-size: 1.6rem;
   }
-  
-  .form-container {
-    background-color: rgba(0, 0, 0, 0.7);
-    padding: 20px;
-    border-radius: 10px;
+
+  .hatom-button {
+    font-size: 0.95rem;
+    padding: 0.5rem 1.25rem;
   }
-  
-  form {
-    display: flex;
-    flex-direction: column;
+
+  .drop-zone {
+    padding: 1.25rem;
   }
-  
-  label {
-    margin-bottom: 10px;
+
+  .preview-image {
+    max-height: 200px;
+    object-fit: contain;
   }
-  
-  input[type="text"],
-  input[type="password"],
-  input[type="file"],
-  button {
-    margin-bottom: 10px;
-    padding: 10px;
-    border-radius: 5px;
-    border: none;
+
+  .welcome-message {
+    font-size: 0.95rem;
   }
-  
-  button {
-    background-color: #4CAF50;
-    color: white;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #45a049;
-  }
+}
