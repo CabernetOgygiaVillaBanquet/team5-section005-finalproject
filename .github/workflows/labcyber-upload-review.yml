@@ -14,7 +14,16 @@ jobs:
       - name: Checkout PR files
         uses: actions/checkout@v3
 
+      - name: Validate commit SHAs
+        id: validate_shas
+        run: |
+          if ! git cat-file -e ${{ github.event.pull_request.base.sha }} || ! git cat-file -e ${{ github.sha }}; then
+            echo "One of the commit SHAs does not exist."
+            exit 1
+          fi
+
       - name: Show uploaded file summary
+        if: success()
         run: |
           echo "🔍 Changed files:"
           git diff --name-status ${{ github.event.pull_request.base.sha }} ${{ github.sha }}
@@ -36,7 +45,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const msg = `🔔 **New LabCyber Docs Upload**\n\n- PR Title: ${context.payload.pull_request.title}\n- From: ${context.payload.pull_request.user.login}\n\n📎 Please review and merge if valid.`;
+            const msg = `🔔 **New LabCyber Docs Upload**\n\n- PR Title: ${context.payload.pull_request.title}\n- From: ${context.payload.pull_request.user.login}\n\n📎 Please review and merge the changes.`;
             github.rest.issues.createComment({
               issue_number: context.payload.pull_request.number,
               owner: context.repo.owner,
