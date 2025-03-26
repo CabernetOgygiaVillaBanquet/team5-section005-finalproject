@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout PR files with full history
+      - name: Checkout PR with full history
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Necessary for SHA diff
+          fetch-depth: 0
 
       - name: Show uploaded file summary
         run: |
