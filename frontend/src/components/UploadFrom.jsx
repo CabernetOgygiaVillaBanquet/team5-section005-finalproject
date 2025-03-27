@@ -13,6 +13,7 @@ function UploadForm() {
   const [typeOptions, setTypeOptions] = useState([]);
   const [newFileName, setNewFileName] = useState('');
   const [showToast, setShowToast] = useState(null);
+  const [showThankYou, setShowThankYou] = useState(false); // ✅ new state
 
   const dropRef = useRef(null);
 
@@ -72,6 +73,7 @@ function UploadForm() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setShowThankYou(false); // ✅ reset thank-you
     if (!selectedFile || !selectedHierarchy || !selectedType) return;
 
     setUploading(true);
@@ -126,6 +128,7 @@ function UploadForm() {
         setSelectedFile(null);
         setNewFileName('');
         setSelectedLicense('');
+        setShowThankYou(true); // ✅ show thank-you
       } catch (error) {
         console.error(error);
         showMessage('❌ Upload failed.', 'error');
@@ -200,7 +203,6 @@ function UploadForm() {
         />
       </div>
 
-      {/* 🆕 Summary Section */}
       {(selectedHierarchy || selectedType || selectedLicense || newFileName || selectedFile) && (
         <div className="summary fade-in">
           <h4>📋 Summary</h4>
@@ -215,6 +217,13 @@ function UploadForm() {
       <button type="submit" className="hatom-button" disabled={uploading || !selectedFile}>
         {uploading ? 'Uploading...' : 'Upload'}
       </button>
+
+      {showThankYou && (
+        <div className="thank-you fade-in">
+          🎉 <strong>Thank you</strong> for contributing to the LabCyber documentation!<br />
+          Your effort is appreciated and helps the whole community 🌱
+        </div>
+      )}
     </form>
   );
 }
