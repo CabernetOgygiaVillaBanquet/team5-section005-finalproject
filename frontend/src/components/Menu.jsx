@@ -15,6 +15,7 @@ const Menu = ({ onLogout }) => {
       {open && (
         <nav className="menu-content">
           <a href="/dashboard">Dashboard</a>
+          <a href="/admin">Admin</a>
           <button className="logout-link" onClick={onLogout}>Logout</button>
         </nav>
       )}
