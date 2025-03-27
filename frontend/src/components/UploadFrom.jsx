@@ -192,8 +192,25 @@ function UploadForm() {
 
       <div className="form-group fade-in">
         <label>Rename File:</label>
-        <input type="text" placeholder="Optional file name" value={newFileName} onChange={(e) => setNewFileName(e.target.value)} />
+        <input
+          type="text"
+          placeholder="Optional file name"
+          value={newFileName}
+          onChange={(e) => setNewFileName(e.target.value)}
+        />
       </div>
+
+      {/* 🆕 Summary Section */}
+      {(selectedHierarchy || selectedType || selectedLicense || newFileName || selectedFile) && (
+        <div className="summary fade-in">
+          <h4>📋 Summary</h4>
+          <p><strong>Hierarchy:</strong> {selectedHierarchy || '—'}</p>
+          <p><strong>Type:</strong> {selectedType || '—'}</p>
+          <p><strong>License:</strong> {selectedLicense || '—'}</p>
+          <p><strong>New File Name:</strong> {newFileName || '—'}</p>
+          <p><strong>Selected File:</strong> {selectedFile?.name || '—'}</p>
+        </div>
+      )}
 
       <button type="submit" className="hatom-button" disabled={uploading || !selectedFile}>
         {uploading ? 'Uploading...' : 'Upload'}
