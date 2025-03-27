@@ -276,3 +276,15 @@ body, html {
   text-align: left;
   padding: 0;
 }
+
+.thank-you {
+  margin-top: 2rem;
+  padding: 1.2rem;
+  background-color: #101010;
+  border: 1px solid #5e22c3;
+  border-radius: 10px;
+  color: #c1ff12;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 500;
+}
