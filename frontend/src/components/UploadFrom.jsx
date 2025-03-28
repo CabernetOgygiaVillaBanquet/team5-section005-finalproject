@@ -13,6 +13,7 @@ function UploadForm({ user }) {
   const [typeOptions, setTypeOptions] = useState([]);
   const [newFileName, setNewFileName] = useState('');
   const [showToast, setShowToast] = useState(null);
+  const [showThankYou, setShowThankYou] = useState(false); // ✅ Added
 
   const dropRef = useRef(null);
 
@@ -108,6 +109,8 @@ function UploadForm({ user }) {
         setSelectedFile(null);
         setNewFileName('');
         setSelectedLicense('');
+        setShowThankYou(true); // ✅ Show thank you
+        setTimeout(() => setShowThankYou(false), 5000);
       } catch (error) {
         console.error(error);
         showMessage('❌ Upload failed.', 'error');
@@ -201,7 +204,7 @@ function UploadForm({ user }) {
       </button>
 
       {showThankYou && (
-        <div className="thank-you fade-in">
+        <div className="thank-you fade-in" style={{ marginTop: '1rem', color: '#5e22c3', fontWeight: '500' }}>
           🎉 <strong>Thank you</strong> for contributing to the LabCyber documentation!<br />
           Your effort is appreciated and helps the whole community 🌱
         </div>
