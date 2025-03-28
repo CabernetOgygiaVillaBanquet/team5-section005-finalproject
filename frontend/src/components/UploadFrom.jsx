@@ -13,7 +13,7 @@ function UploadForm({ user }) {
   const [typeOptions, setTypeOptions] = useState([]);
   const [newFileName, setNewFileName] = useState('');
   const [showToast, setShowToast] = useState(null);
-  const [showThankYou, setShowThankYou] = useState(false); // ✅ Added
+  const [showThankYou, setShowThankYou] = useState(false);
 
   const dropRef = useRef(null);
 
@@ -21,7 +21,7 @@ function UploadForm({ user }) {
   const owner = "CabernetOgygiaVillaBanquet";
   const repo = "LabCyber-Machine-Protocol-Application";
   const branch = "main";
-  const token = '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';
+  const token = 'your_personal_access_token';
 
   useEffect(() => {
     if (selectedFile && selectedFile.type.startsWith('image/')) {
@@ -106,11 +106,21 @@ function UploadForm({ user }) {
 
         const prUrl = prRes.data.html_url;
         showMessage(`✅ Pull Request Created: ${prUrl}`);
+
+        // ✅ Notify admin via backend email service
+        await axios.post('http://localhost:3001/notify-admin', {
+          fileName,
+          hierarchy: selectedHierarchy,
+          type: selectedType,
+          prUrl,
+          username: user?.username || 'Local User',
+          email: user?.email || 'N/A'
+        });
+
         setSelectedFile(null);
         setNewFileName('');
         setSelectedLicense('');
-        setShowThankYou(true); // ✅ Show thank you
-        setTimeout(() => setShowThankYou(false), 5000);
+        setShowThankYou(true);
       } catch (error) {
         console.error(error);
         showMessage('❌ Upload failed.', 'error');
@@ -122,9 +132,7 @@ function UploadForm({ user }) {
 
   return (
     <form className="upload-form" onSubmit={handleSubmit}>
-      {showToast && (
-        <div className={`toast ${showToast.type}`}>{showToast.message}</div>
-      )}
+      {showToast && <div className={`toast ${showToast.type}`}>{showToast.message}</div>}
 
       {user?.isLocal && (
         <div className="user-profile">
@@ -204,7 +212,7 @@ function UploadForm({ user }) {
       </button>
 
       {showThankYou && (
-        <div className="thank-you fade-in" style={{ marginTop: '1rem', color: '#5e22c3', fontWeight: '500' }}>
+        <div className="thank-you fade-in">
           🎉 <strong>Thank you</strong> for contributing to the LabCyber documentation!<br />
           Your effort is appreciated and helps the whole community 🌱
         </div>

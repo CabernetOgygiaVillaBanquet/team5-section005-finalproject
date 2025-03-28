@@ -5,6 +5,7 @@ const path = require('path');
 const session = require('express-session');
 const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
+const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -12,7 +13,6 @@ dotenv.config();
 const app = express();
 const port = 3001;
 
-// Autorise le frontend React à accéder au backend avec les cookies
 app.use(cors({
   origin: 'http://localhost:3000',
   credentials: true
@@ -20,32 +20,25 @@ app.use(cors({
 
 app.use(express.json());
 
-// Configuration des cookies de session
+// Session configuration
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false,        // true en production avec HTTPS
+    secure: false,
     httpOnly: true,
-    sameSite: 'lax'       // Important pour autoriser les cookies cross-origin en dev
+    sameSite: 'lax'
   }
 }));
 
-// Initialisation de Passport.js
+// Passport GitHub OAuth
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Sérialisation et désérialisation de l'utilisateur pour la session
-passport.serializeUser((user, done) => {
-  done(null, user);
-});
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((obj, done) => done(null, obj));
 
-passport.deserializeUser((obj, done) => {
-  done(null, obj);
-});
-
-// Stratégie GitHub
 passport.use(new GitHubStrategy({
   clientID: process.env.GITHUB_CLIENT_ID,
   clientSecret: process.env.GITHUB_CLIENT_SECRET,
@@ -55,47 +48,36 @@ passport.use(new GitHubStrategy({
   return done(null, profile);
 }));
 
-// Upload de fichiers
+// Multer upload
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, 'uploads'));
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname);
-  }
+  destination: (req, file, cb) => cb(null, path.join(__dirname, 'uploads')),
+  filename: (req, file, cb) => cb(null, file.originalname)
 });
 const upload = multer({ storage });
 
 app.post('/upload', upload.single('file'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).send('No file uploaded.');
-  }
+  if (!req.file) return res.status(400).send('No file uploaded.');
   res.send('File uploaded successfully. Awaiting admin validation.');
 });
 
-// Routes GitHub OAuth
+// GitHub Auth routes
 app.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
-
 app.get('/auth/github/callback',
   passport.authenticate('github', { failureRedirect: 'http://localhost:3000/login' }),
-  (req, res) => {
-    res.redirect('http://localhost:3000/');
-  }
+  (req, res) => res.redirect('http://localhost:3000/')
 );
 
-// 🔁 Route de logout mise à jour (sans redirection vers le frontend)
 app.get('/logout', (req, res, next) => {
   req.logout((err) => {
     if (err) return next(err);
     req.session.destroy((err) => {
       if (err) return next(err);
       res.clearCookie('connect.sid', { path: '/' });
-      res.status(200).send('Logged out');  // ✅ plus de redirection ici
+      res.status(200).send('Logged out');
     });
   });
 });
 
-// Route pour récupérer l'utilisateur connecté
 app.get('/user', (req, res) => {
   if (req.isAuthenticated()) {
     res.send(req.user);
@@ -104,13 +86,48 @@ app.get('/user', (req, res) => {
   }
 });
 
-// Middleware de gestion des erreurs
+// 📩 Route to notify admin via email after upload
+app.post('/notify-admin', async (req, res) => {
+  const { fileName, hierarchy, type, prUrl, username, email } = req.body;
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.SMTP_EMAIL,
+      pass: process.env.SMTP_PASS
+    }
+  });
+
+  const mailOptions = {
+    from: `"LabCyber Docs" <${process.env.SMTP_EMAIL}>`,
+    to: 'nicolas.cholin@edu.devinci.fr',
+    subject: `📥 New Upload: ${fileName}`,
+    html: `
+      <h3>📁 New Documentation Upload Submitted</h3>
+      <p><strong>User:</strong> ${username} (${email})</p>
+      <p><strong>Hierarchy:</strong> ${hierarchy}</p>
+      <p><strong>Type:</strong> ${type}</p>
+      <p><strong>File:</strong> ${fileName}</p>
+      <p><a href="${prUrl}">🔗 View Pull Request</a></p>
+      <p>🛂 Please validate this addition via the <strong>admin dashboard</strong>.</p>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    res.status(200).json({ message: 'Notification sent' });
+  } catch (err) {
+    console.error('Email send error:', err);
+    res.status(500).json({ error: 'Failed to send email' });
+  }
+});
+
+// Error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
 });
 
-// Lancement du serveur
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
