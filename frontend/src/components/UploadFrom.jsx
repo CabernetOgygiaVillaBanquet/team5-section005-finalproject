@@ -21,7 +21,7 @@ function UploadForm({ user }) {
   const owner = "CabernetOgygiaVillaBanquet";
   const repo = "LabCyber-Machine-Protocol-Application";
   const branch = "main";
-  const token = 'your_personal_access_token';
+  const token = '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';
 
   useEffect(() => {
     if (selectedFile && selectedFile.type.startsWith('image/')) {
