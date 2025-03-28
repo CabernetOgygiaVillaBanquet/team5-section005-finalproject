@@ -3,7 +3,7 @@ import axios from 'axios';
 import { FaProjectDiagram, FaCogs, FaCalendarAlt } from 'react-icons/fa';
 import '../App.css';
 
-function UploadForm() {
+function UploadForm({ user }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewURL, setPreviewURL] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -13,16 +13,14 @@ function UploadForm() {
   const [typeOptions, setTypeOptions] = useState([]);
   const [newFileName, setNewFileName] = useState('');
   const [showToast, setShowToast] = useState(null);
-  const [showThankYou, setShowThankYou] = useState(false); // ✅ new state
 
   const dropRef = useRef(null);
 
   const licenseOptions = ['Open', 'Public', 'Private'];
-
   const owner = "CabernetOgygiaVillaBanquet";
   const repo = "LabCyber-Machine-Protocol-Application";
   const branch = "main";
-  const token = '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';
+  const token = 'your_github_token_here';
 
   useEffect(() => {
     if (selectedFile && selectedFile.type.startsWith('image/')) {
@@ -49,22 +47,18 @@ function UploadForm() {
     }
   };
 
-  const handleFileSelect = (file) => {
-    setSelectedFile(file);
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) setSelectedFile(file);
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
-    if (file) handleFileSelect(file);
+    if (file) setSelectedFile(file);
   };
 
   const handleDragOver = (e) => e.preventDefault();
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) handleFileSelect(file);
-  };
 
   const showMessage = (msg, type = 'success') => {
     setShowToast({ message: msg, type });
@@ -73,7 +67,6 @@ function UploadForm() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setShowThankYou(false); // ✅ reset thank-you
     if (!selectedFile || !selectedHierarchy || !selectedType) return;
 
     setUploading(true);
@@ -87,48 +80,34 @@ function UploadForm() {
       const branchName = `upload-${selectedHierarchy.toLowerCase()}-${timestamp}`;
 
       try {
-        const refRes = await axios.get(
-          `https://api.github.com/repos/${owner}/${repo}/git/ref/heads/${branch}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const refRes = await axios.get(`https://api.github.com/repos/${owner}/${repo}/git/ref/heads/${branch}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         const mainSha = refRes.data.object.sha;
 
-        await axios.post(
-          `https://api.github.com/repos/${owner}/${repo}/git/refs`,
-          {
-            ref: `refs/heads/${branchName}`,
-            sha: mainSha,
-          },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        await axios.post(`https://api.github.com/repos/${owner}/${repo}/git/refs`, {
+          ref: `refs/heads/${branchName}`,
+          sha: mainSha,
+        }, { headers: { Authorization: `Bearer ${token}` } });
 
-        await axios.put(
-          `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`,
-          {
-            message: `[LabCyber Docs] Upload ${fileName} to ${selectedHierarchy}/${selectedType}`,
-            content: base64Content,
-            branch: branchName,
-          },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        await axios.put(`https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`, {
+          message: `[LabCyber Docs] Upload ${fileName} to ${selectedHierarchy}/${selectedType}`,
+          content: base64Content,
+          branch: branchName,
+        }, { headers: { Authorization: `Bearer ${token}` } });
 
-        const prRes = await axios.post(
-          `https://api.github.com/repos/${owner}/${repo}/pulls`,
-          {
-            title: `[LabCyber Docs] ${fileName} for ${selectedHierarchy}`,
-            head: branchName,
-            base: branch,
-            body: `Documentation upload for:\n- Type: ${selectedType}\n- License: ${selectedLicense || 'None'}\n\n_Automated upload via LabCyber Docs App_`,
-          },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const prRes = await axios.post(`https://api.github.com/repos/${owner}/${repo}/pulls`, {
+          title: `[LabCyber Docs] ${fileName} for ${selectedHierarchy}`,
+          head: branchName,
+          base: branch,
+          body: `Documentation upload for:\n- Type: ${selectedType}\n- License: ${selectedLicense || 'None'}\n\n_Automated upload via LabCyber Docs App_`,
+        }, { headers: { Authorization: `Bearer ${token}` } });
 
         const prUrl = prRes.data.html_url;
         showMessage(`✅ Pull Request Created: ${prUrl}`);
         setSelectedFile(null);
         setNewFileName('');
         setSelectedLicense('');
-        setShowThankYou(true); // ✅ show thank-you
       } catch (error) {
         console.error(error);
         showMessage('❌ Upload failed.', 'error');
@@ -142,6 +121,20 @@ function UploadForm() {
     <form className="upload-form" onSubmit={handleSubmit}>
       {showToast && (
         <div className={`toast ${showToast.type}`}>{showToast.message}</div>
+      )}
+
+      {user?.isLocal && (
+        <div className="user-profile">
+          <img
+            src={user.avatar || '/default-avatar.png'}
+            alt="User"
+            className="user-avatar"
+            style={{ width: 60, height: 60, borderRadius: '50%', objectFit: 'cover' }}
+          />
+          <p style={{ color: '#5e22c3', marginTop: '0.5rem' }}>
+            Welcome <strong>{user.username || 'Local User'}</strong>
+          </p>
+        </div>
       )}
 
       <div className="form-group">
@@ -202,17 +195,6 @@ function UploadForm() {
           onChange={(e) => setNewFileName(e.target.value)}
         />
       </div>
-
-      {(selectedHierarchy || selectedType || selectedLicense || newFileName || selectedFile) && (
-        <div className="summary fade-in">
-          <h4>📋 Summary</h4>
-          <p><strong>Hierarchy:</strong> {selectedHierarchy || '—'}</p>
-          <p><strong>Type:</strong> {selectedType || '—'}</p>
-          <p><strong>License:</strong> {selectedLicense || '—'}</p>
-          <p><strong>New File Name:</strong> {newFileName || '—'}</p>
-          <p><strong>Selected File:</strong> {selectedFile?.name || '—'}</p>
-        </div>
-      )}
 
       <button type="submit" className="hatom-button" disabled={uploading || !selectedFile}>
         {uploading ? 'Uploading...' : 'Upload'}

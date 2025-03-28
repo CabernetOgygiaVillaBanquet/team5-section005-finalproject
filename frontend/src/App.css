@@ -277,6 +277,38 @@ body, html {
   padding: 0;
 }
 
+.login-section {
+  margin-bottom: 1.5rem;
+}
+
+.login-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.tab {
+  padding: 0.5rem 1rem;
+  background: #1a1a1a;
+  border: 1px solid #5e22c3;
+  color: #c1ff12;
+  font-family: 'Trebuchet MS', sans-serif;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease background;
+}
+
+.tab:hover {
+  background: #222;
+}
+
+.tab.active {
+  background-color: #5e22c3;
+  color: #fff;
+}
+
+
 .thank-you {
   margin-top: 2rem;
   padding: 1.2rem;
