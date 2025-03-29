@@ -106,7 +106,7 @@ app.post('/notify-admin', async (req, res) => {
 
   const mailOptions = {
     from: `"LabCyber Docs" <${process.env.SMTP_USER}>`,
-    to: 'labcyber@ptcc.fr',
+    to: 'nicolas.cholin@edu.devinci.fr',
     subject: `📂 New Upload: ${fileName}`,
     text: `A new file was uploaded to LabCyber Docs.
 
