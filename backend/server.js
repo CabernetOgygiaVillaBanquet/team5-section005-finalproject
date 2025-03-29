@@ -93,34 +93,42 @@ app.post('/notify-admin', async (req, res) => {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: process.env.SMTP_EMAIL,
+      user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS
     }
   });
 
+  const fromIdentity = username && email
+    ? `${username} <${email}>`
+    : username
+      ? username
+      : 'Unknown user';
+
   const mailOptions = {
-    from: `"LabCyber Docs" <${process.env.SMTP_EMAIL}>`,
-    to: 'nicolas.cholin@edu.devinci.fr',
-    subject: `📥 New Upload: ${fileName}`,
-    html: `
-      <h3>📁 New Documentation Upload Submitted</h3>
-      <p><strong>User:</strong> ${username} (${email})</p>
-      <p><strong>Hierarchy:</strong> ${hierarchy}</p>
-      <p><strong>Type:</strong> ${type}</p>
-      <p><strong>File:</strong> ${fileName}</p>
-      <p><a href="${prUrl}">🔗 View Pull Request</a></p>
-      <p>🛂 Please validate this addition via the <strong>admin dashboard</strong>.</p>
-    `
+    from: `"LabCyber Docs" <${process.env.SMTP_USER}>`,
+    to: 'labcyber@ptcc.fr',
+    subject: `📂 New Upload: ${fileName}`,
+    text: `A new file was uploaded to LabCyber Docs.
+
+📁 File: ${fileName}
+🧱 Hierarchy: ${hierarchy}
+🔧 Type: ${type}
+🔗 Pull Request: ${prUrl}
+
+Submitted by: ${fromIdentity}
+
+Please review and validate.`,
   };
 
   try {
     await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: 'Notification sent' });
+    res.status(200).send('Admin notified');
   } catch (err) {
-    console.error('Email send error:', err);
-    res.status(500).json({ error: 'Failed to send email' });
+    console.error('Email failed:', err);
+    res.status(500).send('Email failed to send');
   }
 });
+
 
 // Error handling
 app.use((err, req, res, next) => {
