@@ -64,8 +64,8 @@ const LocalLogin = ({ onLogin }) => {
           {error && <p className="error-msg">{error}</p>}
         </form>
         <p style={{ marginTop: '1rem', fontSize: '0.9rem', color: '#ccc' }}>
-          <a href="/register" style={{ color: '#c1ff12' }}>Create an account</a> ·
-          <a href="/reset" style={{ color: '#c1ff12', marginLeft: '8px' }}>Forgot password?</a>
+          <a href="/register" style={{ color: '#2196F3' }}>Create an account</a> ·
+          <a href="/reset" style={{ color: '#2196F3', marginLeft: '8px' }}>Forgot password?</a>
         </p>
       </div>
     </div>
