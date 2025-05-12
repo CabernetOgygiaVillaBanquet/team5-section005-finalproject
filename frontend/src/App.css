@@ -32,30 +32,69 @@ body, html {
 }
 
 .hatom-title {
-  color: #5e22c3;
+  color: #2196F3;
   font-size: 2.2rem;
   font-weight: 500;
   margin-bottom: 2rem;
   text-transform: uppercase;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .hatom-button {
   font-family: 'Trebuchet MS', sans-serif;
   font-weight: 500;
   font-size: 1rem;
-  background-color: #5e22c3;
+  background-color: #2196F3;
   color: #fff;
   border: none;
   border-radius: 12px;
   padding: 0.75rem 2rem;
   cursor: pointer;
   text-decoration: none;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
   margin-top: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .hatom-button:hover {
-  background-color: #4a1ca1;
+  background-color: #0d8bf2;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.submit-button {
+  margin-top: 1.5rem;
+  width: 100%;
+  font-size: 1.1rem;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.button-icon {
+  font-size: 1.2rem;
+}
+
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .logout {
@@ -67,23 +106,73 @@ body, html {
   color: #fff;
   padding: 2rem;
   border-radius: 16px;
-  box-shadow: 0 0 25px rgba(94, 34, 195, 0.1);
+  box-shadow: 0 0 25px rgba(33, 150, 243, 0.15);
   font-family: 'Trebuchet MS', sans-serif;
   max-width: 600px;
   margin: 2rem auto;
   position: relative;
+  border: 1px solid rgba(33, 150, 243, 0.1);
+  backdrop-filter: blur(5px);
 }
 
 .upload-form .form-group {
   margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+
+.upload-form .form-group.error label {
+  color: #f44336;
+}
+
+.error-message {
+  color: #f44336;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.error-input {
+  border: 1px solid #f44336 !important;
+  background-color: rgba(244, 67, 54, 0.05) !important;
+}
+
+.error-border {
+  border-color: #f44336 !important;
+}
+
+.field-hint {
+  font-size: 0.85rem;
+  color: #aaa;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.field-hint.success {
+  color: #4CAF50;
+}
+
+.enhanced-select {
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: none;
+  background: #111;
+  color: #fff;
+  font-size: 1rem;
+  width: 100%;
+  cursor: pointer;
 }
 
 .upload-form label {
   margin-bottom: 0.5rem;
   font-weight: 500;
-  color: #5e22c3;
+  color: #2196F3;
+  display: block;
 }
 
 .upload-form select,
@@ -114,18 +203,52 @@ body, html {
 }
 
 .drop-zone {
-  border: 2px dashed #5e22c3;
+  border: 2px dashed #2196F3;
   padding: 2rem;
   text-align: center;
   border-radius: 12px;
   margin-bottom: 1rem;
   cursor: pointer;
   background: #101010;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
 }
 
 .drop-zone:hover {
   background: #181818;
+  border-color: #64b5f6;
+  transform: translateY(-2px);
+}
+
+.file-selected, .file-upload-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.file-selected p, .file-upload-prompt p {
+  margin: 0.5rem 0;
+  font-weight: 500;
+}
+
+.file-selected small, .file-upload-prompt small {
+  color: #aaa;
+}
+
+.error-text {
+  color: #f44336;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .preview-card {
@@ -166,14 +289,15 @@ body, html {
 
 .welcome-message {
   background: #101010;
-  border: 1px solid #5e22c3;
-  color: #5e22c3;
+  border: 1px solid #2196F3;
+  color: #2196F3;
   padding: 1rem;
   border-radius: 10px;
   font-weight: 500;
   margin-bottom: 1.5rem;
   text-align: center;
   animation: fadeIn 0.4s ease-in-out;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .user-dashboard {
@@ -183,14 +307,16 @@ body, html {
 .login-intro {
   font-size: 1.1rem;
   margin-bottom: 1rem;
-  color: #5e22c3;
+  color: #2196F3;
   text-align: center;
+  font-weight: 500;
 }
 
 @media (max-width: 768px) {
   .hatom-card, .upload-form {
     padding: 1rem;
     border-radius: 12px;
+    width: 90%;
   }
 
   .hatom-title {
@@ -200,10 +326,12 @@ body, html {
   .hatom-button {
     font-size: 0.95rem;
     padding: 0.5rem 1.25rem;
+    width: 100%;
   }
 
   .drop-zone {
     padding: 1.25rem;
+    min-height: 120px;
   }
 
   .preview-image {
@@ -213,6 +341,36 @@ body, html {
 
   .welcome-message {
     font-size: 0.95rem;
+  }
+  
+  .upload-form .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .upload-form select,
+  .upload-form input[type="text"],
+  .upload-form input[type="file"] {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 480px) {
+  .hatom-wrapper {
+    padding: 1rem 0.5rem;
+  }
+  
+  .hatom-card {
+    padding: 0.75rem;
+  }
+  
+  .hatom-title {
+    font-size: 1.4rem;
+  }
+  
+  .menu-content {
+    width: 200px;
+    right: -10px;
   }
 }
 
@@ -233,7 +391,7 @@ body, html {
 
 .bar {
   height: 4px;
-  background:  #5e22c3;
+  background: #2196F3;
   margin: 6px 0;
   border-radius: 2px;
   transition: 0.4s;
@@ -265,7 +423,7 @@ body, html {
 
 .menu-content a,
 .logout-link {
-  color: #5e22c3;
+  color: #2196F3;
   text-decoration: none;
   font-weight: 500;
   font-family: 'Trebuchet MS', sans-serif;
@@ -274,7 +432,15 @@ body, html {
   border: none;
   cursor: pointer;
   text-align: left;
-  padding: 0;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  display: block;
+}
+
+.menu-content a:hover,
+.logout-link:hover {
+  background-color: rgba(33, 150, 243, 0.1);
 }
 
 .login-section {
@@ -291,12 +457,13 @@ body, html {
 .tab {
   padding: 0.5rem 1rem;
   background: #1a1a1a;
-  border: 1px solid #5e22c3;
-  color: #c1ff12;
+  border: 1px solid #2196F3;
+  color: #fff;
   font-family: 'Trebuchet MS', sans-serif;
   border-radius: 8px;
   cursor: pointer;
-  transition: 0.3s ease background;
+  transition: 0.3s ease all;
+  font-weight: 500;
 }
 
 .tab:hover {
@@ -304,8 +471,9 @@ body, html {
 }
 
 .tab.active {
-  background-color: #5e22c3;
+  background-color: #2196F3;
   color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 
@@ -313,10 +481,116 @@ body, html {
   margin-top: 2rem;
   padding: 1.2rem;
   background-color: #101010;
-  border: 1px solid #5e22c3;
+  border: 1px solid #2196F3;
   border-radius: 10px;
-  color: #c1ff12;
+  color: #fff;
   text-align: center;
   font-size: 1rem;
   font-weight: 500;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Basic Modal Styles --- */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it's on top */
+  backdrop-filter: blur(3px);
+}
+
+.modal-content {
+  background-color: #111;
+  color: #fff;
+  padding: 25px 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+  max-width: 500px; /* Limit width */
+  width: 90%; /* Responsive width */
+  animation: fadeInModal 0.3s ease-out;
+  border: 1px solid rgba(33, 150, 243, 0.2);
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  color: #2196F3;
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.modal-content p {
+  margin: 8px 0;
+  line-height: 1.5;
+  color: #ddd;
+}
+
+.modal-content strong {
+  color: #fff;
+}
+
+.modal-content hr {
+  border: none;
+  border-top: 1px solid #333;
+  margin: 15px 0;
+}
+
+.modal-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right */
+  gap: 15px; /* Space between buttons */
+}
+
+.modal-actions button {
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px; /* Space between icon and text */
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.modal-actions button:active {
+    transform: scale(0.98);
+}
+
+
+.button-cancel {
+  background-color: #333; /* Dark grey */
+  color: #fff;
+  border: 1px solid #555;
+}
+.button-cancel:hover {
+  background-color: #444;
+}
+
+
+.button-confirm {
+  background-color: #2196F3; /* Blue */
+  color: white;
+}
+.button-confirm:hover {
+  background-color: #0d8bf2;
+}
+.button-confirm:disabled {
+  background-color: #64b5f6; /* Lighter blue when disabled */
+  cursor: not-allowed;
+}
+
+
+/* Simple fade-in animation for modal */
+@keyframes fadeInModal {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
