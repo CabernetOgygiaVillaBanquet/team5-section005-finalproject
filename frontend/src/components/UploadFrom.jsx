@@ -6,6 +6,11 @@ import '../App.css';
 const BASE_HIERARCHY_OPTIONS = ['Project', 'Machine', 'Event'];
 const ADD_NEW_VALUE = 'AddNewHierarchy'; // Unique value for the "Add New" option
 
+// List of blocked file extensions for security
+const BLOCKED_EXTENSIONS = ['.exe', '.bat', '.cmd', '.sh', '.dll', '.msi', '.com', '.ps1', '.vbs', '.zip'];
+// List of explicitly allowed multimedia extensions
+const ALLOWED_MULTIMEDIA = ['.mp4', '.mp3', '.wav', '.avi', '.mov'];
+
 function UploadForm({ user }) {
   // File and Form State
   const [selectedFile, setSelectedFile] = useState(null);
@@ -43,6 +48,18 @@ function UploadForm({ user }) {
   const repo = "LabCyber-Machine-Protocol-Application";
   const branch = "main";
   const token = process.env.REACT_APP_GITHUB_TOKEN || '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';
+
+  // --- Helper function to format file size in MB ---
+  const formatFileSize = (bytes) => {
+    const mb = bytes / (1024 * 1024);
+    return mb.toFixed(2) + ' MB';
+  };
+
+  // --- Helper function to check if file type is allowed ---
+  const isFileTypeAllowed = (fileName) => {
+    const ext = fileName.substring(fileName.lastIndexOf('.')).toLowerCase();
+    return !BLOCKED_EXTENSIONS.includes(ext);
+  };
 
   // --- Effects and Helper Functions (mostly unchanged) ---
   useEffect(() => {
@@ -95,16 +112,26 @@ function UploadForm({ user }) {
 
 
   const handleFileChange = (e) => {
-    // ... (implementation unchanged)
     const file = e.target.files[0];
-    if (file) setSelectedFile(file);
+    if (file) {
+      if (!isFileTypeAllowed(file.name)) {
+        showMessage(`❌ File type not allowed for security reasons. Blocked file types: ${BLOCKED_EXTENSIONS.join(', ')}`, 'error');
+        return;
+      }
+      setSelectedFile(file);
+    }
   };
 
   const handleDrop = (e) => {
-    // ... (implementation unchanged)
     e.preventDefault();
     const file = e.dataTransfer.files[0];
-    if (file) setSelectedFile(file);
+    if (file) {
+      if (!isFileTypeAllowed(file.name)) {
+        showMessage(`❌ File type not allowed for security reasons. Blocked file types: ${BLOCKED_EXTENSIONS.join(', ')}`, 'error');
+        return;
+      }
+      setSelectedFile(file);
+    }
     dropRef.current.classList.remove('drag-over');
   };
 
@@ -150,8 +177,10 @@ function UploadForm({ user }) {
     // Validate file
     if (!selectedFile) {
       errors.file = 'Please select a file to upload';
-    } else if (selectedFile.size > 10 * 1024 * 1024) { // 10MB limit
-      errors.file = 'File size exceeds 10MB limit';
+    } else if (selectedFile.size > 50 * 1024 * 1024) { // 50MB limit
+      errors.file = 'File size exceeds 50MB limit';
+    } else if (!isFileTypeAllowed(selectedFile.name)) {
+      errors.file = `File type not allowed. Blocked file types: ${BLOCKED_EXTENSIONS.join(', ')}`;
     }
     
     // Validate filename if provided
@@ -186,7 +215,7 @@ function UploadForm({ user }) {
         license: selectedLicense || 'None',
         originalFileName: selectedFile.name,
         finalFileName: finalFileName,
-        fileSize: (selectedFile.size / 1024).toFixed(2) + ' KB',
+        fileSize: formatFileSize(selectedFile.size), // Use MB format
         user: user?.username || 'Local User',
         email: user?.email || 'N/A'
     };
@@ -423,7 +452,7 @@ function UploadForm({ user }) {
            {/* Preview content... */}
            {previewURL && <img src={previewURL} alt="preview" className="preview-image" />}
            <p><strong>Name:</strong> {selectedFile.name}</p>
-           <p><strong>Size:</strong> {(selectedFile.size / 1024).toFixed(2)} KB</p>
+           <p><strong>Size:</strong> {formatFileSize(selectedFile.size)}</p>
            <p><strong>Type:</strong> {selectedFile.type || 'N/A'}</p>
         </div>
       )}
@@ -492,20 +521,27 @@ function UploadForm({ user }) {
             <p><strong>Hierarchy:</strong> {confirmationData.hierarchyName} {confirmationData.isNew ? `(${confirmationData.hierarchyType})` : ''}</p>
             <p><strong>File Type:</strong> {confirmationData.fileType}</p>
             <p><strong>License:</strong> {confirmationData.license}</p>
-            <p><strong>Original Filename:</strong> {confirmationData.originalFileName}</p>
-            {confirmationData.finalFileName !== confirmationData.originalFileName && (
-              <p><strong>Final Filename:</strong> {confirmationData.finalFileName}</p>
-            )}
-            <p><strong>File Size:</strong> {confirmationData.fileSize}</p>
-            <p><strong>User:</strong> {confirmationData.user} ({confirmationData.email})</p>
-            <hr />
-            <p>A new branch will be created and a Pull Request opened for review.</p>
+            <p><strong>File:</strong> {confirmationData.finalFileName}</p>
+            <p><strong>Size:</strong> {confirmationData.fileSize}</p>
+            <p><strong>User:</strong> {confirmationData.user}</p>
+            
             <div className="modal-actions">
-              <button onClick={() => setShowConfirmationModal(false)} className="button-cancel">
+              <button 
+                className="hatom-button cancel-button" 
+                onClick={() => setShowConfirmationModal(false)}
+              >
                 <FaTimesCircle /> Cancel
               </button>
-              <button onClick={handleConfirmUpload} className="button-confirm" disabled={uploading}>
-                {uploading ? 'Processing...' : <><FaCheckCircle /> Confirm Upload</>}
+              <button 
+                className="hatom-button confirm-button" 
+                onClick={handleConfirmUpload}
+                disabled={uploading}
+              >
+                {uploading ? (
+                  <><span className="spinner"></span> Processing...</>
+                ) : (
+                  <><FaCheckCircle /> Confirm Upload</>
+                )}
               </button>
             </div>
           </div>

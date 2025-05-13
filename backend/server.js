@@ -51,16 +51,89 @@ passport.use(new GitHubStrategy({
 }));
 
 // Multer upload (Kept as in original code)
+// Multer upload with file type filtering
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, path.join(__dirname, 'uploads')),
   filename: (req, file, cb) => cb(null, file.originalname)
 });
-const upload = multer({ storage });
+
+// File filter to block dangerous file types
+const fileFilter = (req, file, cb) => {
+  // List of blocked file extensions
+  const blockedExtensions = [
+    '.exe', '.bat', '.cmd', '.sh', '.dll', '.msi', 
+    '.com', '.ps1', '.vbs', '.zip'
+  ];
+  
+  // List of allowed file extensions (explicitly allow multimedia)
+  const allowedMimeTypes = [
+    'image/jpeg', 'image/png', 'image/gif', 'image/svg+xml',
+    'application/pdf', 'text/plain', 'text/markdown',
+    'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'video/mp4', 'audio/mpeg', 'audio/mp3' // Explicitly allow multimedia files
+  ];
+  
+  // Get file extension
+  const ext = path.extname(file.originalname).toLowerCase();
+  
+  // Check if file extension is in the blocked list
+  if (blockedExtensions.includes(ext)) {
+    return cb(new Error('File type not allowed for security reasons'), false);
+  }
+  
+  // Additional check for mime type (when available)
+  if (file.mimetype && !allowedMimeTypes.includes(file.mimetype)) {
+    // For files without a recognized mime type, check extension
+    const isAllowedExtension = ['.jpg', '.jpeg', '.png', '.gif', '.svg', '.pdf', '.txt', '.md', 
+                               '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.mp4', '.mp3']
+                               .includes(ext);
+    
+    if (!isAllowedExtension) {
+      return cb(new Error('File type not allowed'), false);
+    }
+  }
+  
+  // File passed all checks
+  cb(null, true);
+};
+
+const upload = multer({ 
+  storage,
+  fileFilter,
+  limits: {
+    fileSize: 25 * 1024 * 1024 // 25MB file size limit
+  }
+});
+
+// Error handling middleware for file upload errors
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ error: 'File too large. Maximum size is 25MB.' });
+    }
+    return res.status(400).json({ error: `Upload error: ${err.message}` });
+  } else if (err) {
+    return res.status(400).json({ error: err.message });
+  }
+  next();
+});
 
 app.post('/upload', upload.single('file'), (req, res) => {
   if (!req.file) return res.status(400).send('No file uploaded.');
-  // Note: This endpoint might not be used by the current frontend flow
-  res.send('File uploaded successfully. Awaiting admin validation.');
+  
+  // Convert file size to MB for the response
+  const fileSizeInMB = (req.file.size / (1024 * 1024)).toFixed(2);
+  
+  res.json({
+    message: 'File uploaded successfully. Awaiting admin validation.',
+    file: {
+      name: req.file.originalname,
+      size: `${fileSizeInMB} MB`,
+      type: req.file.mimetype
+    }
+  });
 });
 
 // GitHub Auth routes (Kept as in original code)
