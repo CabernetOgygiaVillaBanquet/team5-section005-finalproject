@@ -207,43 +207,9 @@ const AdminDashboard = () => {
           <strong>📁 Files ({files.length}):</strong>
           <ul className={expanded ? 'expanded' : 'collapsed'}>
             {files.map((file, idx) => {
-              // Extract user info from PR body
-              const bodyLines = pr.body?.split('\n') || [];
-              let username = pr.user.login; // Default to GitHub username
-              let email = '';
-              let isGithubUser = true;
-              
-              // Check if this is a local user from the PR body
-              bodyLines.forEach(line => {
-                if (line.includes('User:')) {
-                  const userInfo = line.split('User:')[1]?.trim();
-                  if (userInfo && userInfo.includes('Local User')) {
-                    // Extract username and email from format like "lastellacadente (lastellacadente@velloci-racing.com) - Local User"
-                    const matches = userInfo.match(/([^\(]+)\s*\(([^\)]+)\)\s*-\s*Local User/);
-                    if (matches && matches.length >= 3) {
-                      username = matches[1].trim();
-                      email = matches[2].trim();
-                      isGithubUser = false;
-                    } else {
-                      username = 'Local User';
-                      isGithubUser = false;
-                    }
-                  }
-                }
-              });
-              
               return (
                 <li key={idx}>
                   <span className="file-name">{file}</span>
-                  <span className={`file-user ${isGithubUser ? 'github-user' : 'local-user'}`}>
-                    {isGithubUser ? <FaGithub /> : '👤'} {username}
-                    {!isGithubUser && email && (
-                      <div className="user-info">
-                        <div className="user-name">{username}</div>
-                        <div className="user-email">{email}</div>
-                      </div>
-                    )}
-                  </span>
                 </li>
               );
             })}
