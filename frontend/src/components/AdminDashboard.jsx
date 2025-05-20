@@ -5,7 +5,6 @@ import './Admin.css';
 
 const REPO_OWNER = 'CabernetOgygiaVillaBanquet';
 const REPO_NAME = 'LabCyber-Machine-Protocol-Application';
-const GITHUB_TOKEN = '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';
 
 const AdminDashboard = () => {
   const [pullRequests, setPullRequests] = useState([]);
