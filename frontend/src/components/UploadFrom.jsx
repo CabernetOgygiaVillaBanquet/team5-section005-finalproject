@@ -42,12 +42,11 @@ function UploadForm({ user }) {
   const [confirmationData, setConfirmationData] = useState(null);
 
   const dropRef = useRef(null);
-
   const licenseOptions = ['Open', 'Public', 'Private'];
   const owner = "CabernetOgygiaVillaBanquet";
   const repo = "LabCyber-Machine-Protocol-Application";
   const branch = "main";
-  const token = process.env.REACT_APP_GITHUB_TOKEN || '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';
+  const token = process.env.REACT_APP_GITHUB_TOKEN;
 
   // --- Helper function to format file size in MB ---
   const formatFileSize = (bytes) => {
