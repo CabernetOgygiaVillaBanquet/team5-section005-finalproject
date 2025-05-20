@@ -445,6 +445,10 @@ function UploadForm({ user }) {
         )}
       </div>
 
+      {/* Add file size limit notice */}
+      <div className="file-size-notice">
+        <FaInfoCircle /> <strong>Note:</strong> Files larger than 25 MB (Machine Manipulation Videos) should be uploaded to the <a href="https://makertube.net/a/labcyber_docs/video-channels" target="_blank" rel="noopener noreferrer">LabCyber Docs channel</a> instead.
+      </div>
 
       {selectedFile && (
         <div className="preview-card fade-in">
