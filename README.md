@@ -84,27 +84,93 @@ File Requirements
 Maximum file size: 25MB
 Blocked file extensions: .exe, .bat, .cmd, .sh, .dll, .msi, .com, .ps1, .vbs, .zip
 For larger video files, use the LabCyber Docs channel on MakerTube
-Administrator Guide
-Accessing Admin Dashboard
-Navigate to /admin in the application
-Enter the admin password (default: labcyber2025)
-Managing Pull Requests
-The admin dashboard provides:
 
-Statistics on uploads (total, by hierarchy, by type)
-Open pull requests awaiting review
-Closed/processed pull requests
-Search and filtering capabilities
+## Administrator Guide
 
-To review a pull request:
-- View the file information, including hierarchy, type, and submitter
-- Click "Approve" to merge the changes into the main branch
-- Click "Reject" to close the pull request without merging
+### Prerequisites
+- Admin password access (default: `labcyber2025`)
+- SMTP configuration for email notifications
+- GitHub repository permissions for pull request management
 
-### Email Notifications
-Administrators receive email notifications when:
-- A new hierarchy (Project/Machine) is created
-- A new file is uploaded to an existing hierarchy
+### Accessing Admin Dashboard
+1. Navigate to `/admin` in the application URL
+2. Enter the admin password when prompted
+3. You'll be redirected to the admin dashboard overview
+
+### Dashboard Overview
+The admin dashboard provides comprehensive management tools:
+
+**Statistics Panel**
+- Total uploads across all categories
+- Upload breakdown by hierarchy (Project/Machine/Event)
+- Upload breakdown by file type
+- Recent activity summary
+
+**Pull Request Management**
+- **Open Pull Requests**: Pending review and action
+- **Closed Pull Requests**: Previously processed requests
+- **Search & Filter**: Find specific requests by date, submitter, or hierarchy
+
+### Managing Pull Requests
+
+#### Reviewing Open Pull Requests
+1. Navigate to the "Open Pull Requests" section
+2. Each entry displays:
+   - **File Information**: Name, size, type, and hierarchy
+   - **Submitter Details**: Username and submission timestamp
+   - **Preview**: File content preview (when applicable)
+   - **Actions**: Approve or Reject buttons
+
+#### Approving Pull Requests
+1. Review the file content and metadata
+2. Verify the file meets documentation standards
+3. Click **"Approve"** to:
+   - Merge changes into the main branch
+   - Move the request to "Closed" status
+   - Trigger automatic email notification to submitter
+
+#### Rejecting Pull Requests
+1. Identify issues with the submission
+2. Click **"Reject"** to:
+   - Close the pull request without merging
+   - Add optional rejection reason
+   - Notify submitter of rejection status
+
+### Email Notification System
+
+#### Automatic Notifications
+Administrators receive email alerts for:
+- **New Hierarchy Creation**: When users create new Project or Machine categories
+- **File Uploads**: When files are uploaded to existing hierarchies
+- **System Events**: Critical system notifications and errors
+
+#### Notification Configuration
+Email settings are configured in the backend `.env` file:
+```
+SMTP_EMAIL=your_notification_email
+SMTP_PASS=your_email_password
+ADMIN_EMAIL=admin_notification_recipient
+```
+
+### Administrative Best Practices
+
+#### Security Guidelines
+- Change default admin password regularly
+- Monitor failed login attempts
+- Review user activity logs periodically
+- Keep GitHub tokens secure and rotated
+
+#### Content Management
+- Establish clear documentation standards
+- Create hierarchy naming conventions
+- Regularly archive old or outdated content
+- Monitor repository size and performance
+
+#### User Support
+- Respond to pull requests within 24-48 hours
+- Provide clear rejection reasons when applicable
+- Maintain communication with frequent contributors
+- Update documentation based on user feedback
 
 ## Troubleshooting
 ### Common Issues
