@@ -46,7 +46,6 @@ function UploadForm({ user }) {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [confirmationData, setConfirmationData] = useState(null);
   const dropRef = useRef(null);
-
   const licenseOptions = ['Open', 'Public', 'Private'];
   const owner = "CabernetOgygiaVillaBanquet";
   const repo = "team5-section005-finalproject";

@@ -1,4 +1,4 @@
-# LabCyber-Machine-Protocol-Application
+# Welcome to the **team5-section005-finalproject** repository! This project serves as a testing environment for our client's application, allowing us to make adjustments and improvements before integrating actual data. eam5-section005-finalproject
 
 Welcome to the **LabCyber-Machine-Protocol-Application** repository! This project serves as a testing environment for our client’s application, allowing us to make adjustments and improvements before integrating actual data. 
 
@@ -17,7 +17,7 @@ The primary goal of this repository is to:
 
 ## Project Structure
 ```
-LabCyber-Machine-Protocol-Application/
+team5-section005-finalproject/
 ├── .github/                 # GitHub-specific files and workflows
 ├── backend/                 # Server-side code
 ├── frontend/                # Client-side code
@@ -51,8 +51,8 @@ protocol documentation, and to seamlessly integrate with their Git repository.
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/CabernetOgygiaVillaBanquet/LabCyber-Machine-Protocol-Application.git
-   cd LabCyber-Machine-Protocol-Application
+   git clone https://github.com/YOUR_USERNAME/team5-section005-finalproject.git
+   cd team5-section005-finalproject
    ```
 
 2. **Install dependencies for both frontend and backend:**
