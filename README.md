@@ -51,7 +51,7 @@ protocol documentation, and to seamlessly integrate with their Git repository.
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/team5-section005-finalproject.git
+   git clone https://github.com/CabernetOgygiaVillaBanquet/team5-section005-finalproject.git
    cd team5-section005-finalproject
    ```
 

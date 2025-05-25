@@ -5,7 +5,7 @@ import './Admin.css';
 
 const REPO_OWNER = 'CabernetOgygiaVillaBanquet';
 const REPO_NAME = 'team5-section005-finalproject';
-const GITHUB_TOKEN = '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';
+const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN;
 
 const AdminDashboard = () => {
   const [pullRequests, setPullRequests] = useState([]);
