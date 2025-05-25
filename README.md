@@ -1,7 +1,4 @@
-# LabC- Test the application thoroughly
-- Identify and resolve potential issues
-- Implement necessary modifications
-- Ensure seamless integration with the client's data-Machine-Protocol-Application
+# LabCyber-Machine-Protocol-Application
 
 Welcome to the **LabCyber-Machine-Protocol-Application** repository! This project serves as a testing environment for our client’s application, allowing us to make adjustments and improvements before integrating actual data. 
 
@@ -31,6 +28,17 @@ LabCyber-Machine-Protocol-Application/
 ```
 
 This application provides a platform for documenting machine protocols, projects, and events. Users can upload files to contribute to the documentation repository, while administrators can review and manage these contributions.
+
+# Members
+1. Nicolas Cholin
+2. Batex Bafika
+3. Bekassyl Adenov
+4. Rofig Ashumov
+5. Ayman Saifan
+ 
+# Problem Description: 
+LabCyber requires an IT solution to streamline their documentation process, specifically for machine 
+protocol documentation, and to seamlessly integrate with their Git repository.
 
 ## Getting Started
 
