@@ -1,5 +1,3 @@
-# Welcome to the **team5-section005-finalproject** repository! This project serves as a testing environment for our client's application, allowing us to make adjustments and improvements before integrating actual data. eam5-section005-finalproject
-
 Welcome to the **LabCyber-Machine-Protocol-Application** repository! This project serves as a testing environment for our client’s application, allowing us to make adjustments and improvements before integrating actual data. 
 
 ## Purpose
