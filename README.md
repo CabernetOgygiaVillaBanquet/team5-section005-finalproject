@@ -20,6 +20,7 @@ team5-section005-finalproject/
 ├── backend/                 # Server-side code
 ├── frontend/                # Client-side code
 ├── node_modules/            # Dependencies
+├── Project-Docs/            # Final project deliverables (report, presentation, video)
 ├── .gitignore              # Files and directories to ignore in Git
 ├── README.md               # Project documentation
 └── package.json            # Project metadata and dependencies
