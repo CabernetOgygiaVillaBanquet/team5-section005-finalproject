@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { FaProjectDiagram, FaCogs, FaCalendarAlt, FaPlusCircle, FaCheckCircle, FaTimesCircle, FaUpload, FaExclamationTriangle, FaInfoCircle, FaGithub } from 'react-icons/fa';
+import { FaProjectDiagram, FaCogs, FaCalendarAlt, FaPlusCircle, FaCheckCircle, FaTimesCircle, FaUpload, FaExclamationTriangle, FaInfoCircle, FaGithub, FaSpinner } from 'react-icons/fa';
 import '../App.css';
 
 const BASE_HIERARCHY_OPTIONS = ['Project', 'Machine', 'Event'];
@@ -27,6 +27,11 @@ function UploadForm({ user }) {
   const [showToast, setShowToast] = useState(null);
   const [showThankYou, setShowThankYou] = useState(false);
 
+  // Existing hierarchies state
+  const [existingHierarchies, setExistingHierarchies] = useState([]);
+  const [loadingHierarchies, setLoadingHierarchies] = useState(true);
+  const [hierarchyError, setHierarchyError] = useState(null);
+
   // Form Validation State
   const [formErrors, setFormErrors] = useState({});
   const [formTouched, setFormTouched] = useState({
@@ -40,13 +45,54 @@ function UploadForm({ user }) {
   // Confirmation Modal State
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [confirmationData, setConfirmationData] = useState(null);
-
   const dropRef = useRef(null);
+
   const licenseOptions = ['Open', 'Public', 'Private'];
   const owner = "CabernetOgygiaVillaBanquet";
   const repo = "LabCyber-Machine-Protocol-Application";
   const branch = "main";
   const token = process.env.REACT_APP_GITHUB_TOKEN;
+
+  // --- Function to fetch existing hierarchies from GitHub ---
+  const fetchExistingHierarchies = async () => {
+    try {
+      setLoadingHierarchies(true);
+      setHierarchyError(null);
+
+      const response = await axios.get(
+        `https://api.github.com/repos/${owner}/${repo}/contents?ref=${branch}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/vnd.github.v3+json',
+          },
+        }
+      );      // Filter only directories and exclude common non-hierarchy folders
+      const excludedFolders = ['.github', 'node_modules', '.git', 'dist', 'build', 'public', 'src', 'assets', 'backend', 'frontend'];
+      const hierarchyFolders = response.data
+        .filter(item => 
+          item.type === 'dir' && 
+          !excludedFolders.includes(item.name) &&
+          !item.name.startsWith('.')
+        )
+        .map(item => item.name)
+        .sort();
+
+      setExistingHierarchies(hierarchyFolders);
+    } catch (error) {
+      console.error('Error fetching existing hierarchies:', error);
+      setHierarchyError('Failed to load existing hierarchies');
+      // Fallback to empty array if fetch fails
+      setExistingHierarchies([]);
+    } finally {
+      setLoadingHierarchies(false);
+    }
+  };
+
+  // --- Effect to fetch existing hierarchies on component mount ---
+  useEffect(() => {
+    fetchExistingHierarchies();
+  }, []);
 
   // --- Helper function to format file size in MB ---
   const formatFileSize = (bytes) => {
@@ -70,16 +116,46 @@ function UploadForm({ user }) {
       setPreviewURL(null);
     }
   }, [selectedFile]);
-
   const getTypeOptionsForHierarchy = (hierarchy) => {
-    // ... (implementation unchanged)
+    // Default hierarchies with their specific types
     if (hierarchy === 'Project') {
       return ['Conception File', 'Fabrication File', 'Recording', 'Report'];
     } else if (hierarchy === 'Machine') {
       return ['Written Protocol', 'Filmed Manipulation', 'Validated Fabrication File'];
     } else if (hierarchy === 'Event') {
       return ['Presentation', 'Recording', 'Picture'];
-    } else {
+    } 
+    // For existing hierarchies from repository, try to detect type based on name patterns
+    else if (existingHierarchies.includes(hierarchy)) {
+      const hierarchyLower = hierarchy.toLowerCase();
+      
+      // Try to detect if it's a project-like hierarchy
+      if (hierarchyLower.includes('project') || hierarchyLower.includes('prototype') || 
+          hierarchyLower.includes('design') || hierarchyLower.includes('build')) {
+        return ['Conception File', 'Fabrication File', 'Recording', 'Report', 'Documentation', 'Schematic'];
+      }
+      // Try to detect if it's a machine-like hierarchy
+      else if (hierarchyLower.includes('machine') || hierarchyLower.includes('device') || 
+               hierarchyLower.includes('tool') || hierarchyLower.includes('equipment') ||
+               hierarchyLower.includes('instrument') || hierarchyLower.includes('apparatus')) {
+        return ['Written Protocol', 'Filmed Manipulation', 'Validated Fabrication File', 'Manual', 'Calibration'];
+      }
+      // Try to detect if it's an event-like hierarchy
+      else if (hierarchyLower.includes('event') || hierarchyLower.includes('conference') || 
+               hierarchyLower.includes('workshop') || hierarchyLower.includes('meeting') ||
+               hierarchyLower.includes('seminar') || hierarchyLower.includes('presentation')) {
+        return ['Presentation', 'Recording', 'Picture', 'Notes', 'Summary'];
+      }
+      // Default comprehensive options for any existing hierarchy
+      else {
+        return [
+          'Documentation', 'Manual', 'Report', 'Recording', 'Picture', 
+          'Presentation', 'Protocol', 'Schematic', 'Data File', 'Other'
+        ];
+      }
+    } 
+    // Fallback for unknown hierarchies
+    else {
       return [];
     }
   };
@@ -209,20 +285,22 @@ function UploadForm({ user }) {
     const data = {
         isNew: isAddingNewHierarchy,
         hierarchyName: finalHierarchyName,
-        hierarchyType: isAddingNewHierarchy ? newHierarchyType : selectedHierarchy, // More descriptive
+        hierarchyType: isAddingNewHierarchy ? newHierarchyType : selectedHierarchy,
         fileType: selectedType,
         license: selectedLicense || 'None',
         originalFileName: selectedFile.name,
         finalFileName: finalFileName,
-        fileSize: formatFileSize(selectedFile.size), // Use MB format
-        user: user?.username || 'Local User',
-        email: user?.email || 'N/A'
+        fileSize: formatFileSize(selectedFile.size),
+        user: user?.isLocal 
+          ? (user?.name || user?.username || 'Local User') 
+          : (user?.name || user?.login || 'GitHub User'),
+        email: user?.email || 'N/A',
+        isLocalUser: user?.isLocal || false
     };
 
     setConfirmationData(data); // Store data
     setShowConfirmationModal(true); // Show the modal
   };
-
 
   // --- RENAMED: Function to Handle Actual Upload (Called from Modal) ---
   const handleConfirmUpload = async () => {
@@ -232,7 +310,7 @@ function UploadForm({ user }) {
     setUploading(true);
     setShowThankYou(false);
 
-    const { hierarchyName, fileType, finalFileName, isNew, hierarchyType } = confirmationData; // Use data from confirmation
+    const { hierarchyName, fileType, finalFileName, isNew, hierarchyType, isLocalUser } = confirmationData; // Use data from confirmation
 
     const reader = new FileReader();
     reader.readAsDataURL(selectedFile); // Read the file *after* confirmation
@@ -277,11 +355,13 @@ function UploadForm({ user }) {
           hierarchy: hierarchyName,
           type: fileType,
           prUrl,
-          username: user?.username || 'Local User',
+          username: user?.isLocal 
+            ? (user?.name || user?.username || 'Local User') 
+            : (user?.login || user?.name || user?.username || 'GitHub User'),
           email: user?.email || 'N/A',
           isNewHierarchy: isNew,
           newHierarchyType: isNew ? hierarchyType : null,
-          isGithubUser: !user?.isLocal // true for GitHub users, false for local users
+          isGithubUser: !isLocalUser // true for GitHub users, false for local users
         });
         console.log("Admin notified.");
 
@@ -320,26 +400,61 @@ function UploadForm({ user }) {
   return (
     // Pass handleInitiateUpload to the form's onSubmit
     <form className="upload-form" onSubmit={handleInitiateUpload}>
-      {showToast && <div className={`toast ${showToast.type}`}>{showToast.message}</div>}
-
-      {/* --- Form Fields (unchanged structure, uses handleHierarchyChange etc.) --- */}
+      {showToast && <div className={`toast ${showToast.type}`}>{showToast.message}</div>}      {/* --- Form Fields (updated to include existing hierarchies) --- */}
       <div className={`form-group ${formErrors.hierarchy ? 'error' : ''}`}>
         <label><FaProjectDiagram /> Hierarchy:</label>
-        <select 
-          value={selectedHierarchy} 
-          onChange={(e) => {
-            handleHierarchyChange(e);
-            setFormTouched({...formTouched, hierarchy: true});
-          }} 
-          className={formErrors.hierarchy && formTouched.hierarchy ? 'error-input' : ''}
-          required={!isAddingNewHierarchy}
-        >
-          <option value="" disabled>Select a hierarchy or add new</option>
-          {BASE_HIERARCHY_OPTIONS.map(option => (
-            <option key={option} value={option}>{option}</option>
-          ))}
-          <option value={ADD_NEW_VALUE}>+ Add New Project/Machine...</option>
-        </select>
+        {loadingHierarchies ? (
+          <div className="loading-hierarchies">
+            <FaSpinner className="spinner" /> Loading existing hierarchies...
+          </div>
+        ) : (
+          <select 
+            value={selectedHierarchy} 
+            onChange={(e) => {
+              handleHierarchyChange(e);
+              setFormTouched({...formTouched, hierarchy: true});
+            }} 
+            className={formErrors.hierarchy && formTouched.hierarchy ? 'error-input' : ''}
+            required={!isAddingNewHierarchy}
+          >
+            <option value="" disabled>Select a hierarchy or add new</option>
+            
+            {/* Default hierarchy options */}
+            <optgroup label="Default Hierarchies">
+              {BASE_HIERARCHY_OPTIONS.map(option => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </optgroup>
+            
+            {/* Existing hierarchies from repository */}
+            {existingHierarchies.length > 0 && (
+              <optgroup label="Existing Hierarchies">
+                {existingHierarchies.map(hierarchy => (
+                  <option key={hierarchy} value={hierarchy}>{hierarchy}</option>
+                ))}
+              </optgroup>
+            )}
+            
+            <optgroup label="Create New">
+              <option value={ADD_NEW_VALUE}>+ Add New Project/Machine...</option>
+            </optgroup>
+          </select>
+        )}
+        
+        {hierarchyError && (
+          <div className="error-message">
+            <FaExclamationTriangle /> {hierarchyError}
+            <button 
+              type="button" 
+              onClick={fetchExistingHierarchies}
+              className="retry-button"
+              style={{ marginLeft: '10px', fontSize: '12px', padding: '2px 6px' }}
+            >
+              Retry
+            </button>
+          </div>
+        )}
+        
         {formErrors.hierarchy && formTouched.hierarchy && (
           <div className="error-message"><FaExclamationTriangle /> {formErrors.hierarchy}</div>
         )}
@@ -431,7 +546,11 @@ function UploadForm({ user }) {
             <small>Drag & drop or click to change</small>
             <div className="file-user-info">
               <span className={`file-user ${user?.isLocal ? 'local-user' : 'github-user'}`}>
-                {user?.isLocal ? '👤' : <FaGithub />} Submitted by: {user?.username || 'Local User'}
+                {user?.isLocal ? '👤' : <FaGithub />} Submitted by: {
+                  user?.isLocal 
+                    ? (user?.name || user?.username || 'Local User') 
+                    : (user?.login || user?.name || user?.username || 'GitHub User')
+                }
               </span>
             </div>
           </div>
