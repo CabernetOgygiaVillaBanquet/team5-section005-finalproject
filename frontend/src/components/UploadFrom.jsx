@@ -49,7 +49,7 @@ function UploadForm({ user }) {
 
   const licenseOptions = ['Open', 'Public', 'Private'];
   const owner = "CabernetOgygiaVillaBanquet";
-  const repo = "LabCyber-Machine-Protocol-Application";
+  const repo = "team5-section005-finalproject";
   const branch = "main";
   const token = process.env.REACT_APP_GITHUB_TOKEN;
 
